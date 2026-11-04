@@ -1,0 +1,14 @@
+{
+  "name": "yaku-animacion-axial",
+  "version": "1.0.0",
+  "description": "Animación interactiva LH 140 (Yaku Energía)",
+  "scripts": {
+    "build": "node build.mjs",
+    "test": "python tools/test_app.py"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.12"
+  },
+  "private": true,
+  "type": "module"
+}

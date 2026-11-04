@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="es-AR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>LH 140 · Cómo funciona la turbina axial · Yaku Energía</title>
+<meta name="description" content="Animación interactiva 3D de la turbina hidráulica axial LH 140 de Yaku Energía: recorrido por el distribuidor, la hélice, el eje y el generador, con calculadora de potencia.">
+<meta name="theme-color" content="#0f1b20">
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+<a class="skip" href="#panel">Saltar al recorrido</a>
+<header class="topbar">
+  <a class="brand" href="https://www.yakuenergia.com" aria-label="Yaku Energía">
+    <img src="img/logo-yaku-claro.png" alt="Yaku Energía" width="187" height="30">
+  </a>
+  <div class="model-id"><span class="model-tag">LH 140</span><span class="model-sub">Turbina axial · cómo funciona</span></div>
+</header>
+
+<main class="app">
+  <section class="stage" id="stage" aria-label="Visor 3D">
+    <div id="viewport" class="viewport"></div>
+    <div id="labels" class="labels" aria-label="Etiquetas de piezas"></div>
+
+    <div id="loader" class="loader" role="status" aria-live="polite">
+      <div class="loader-bar" role="progressbar" aria-label="Progreso de carga del modelo 3D" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="loader-fill"></span></div>
+      <p id="loader-txt">Cargando modelo 3D de la LH 140…</p>
+      <p class="loader-pct" id="loader-pct">0 %</p>
+    </div>
+
+    <div id="error" class="error" role="alert" hidden>
+      <h2 id="err-title">No se pudo cargar el modelo 3D</h2>
+      <p id="err-cause"></p>
+      <p id="err-hint" class="err-hint"></p>
+      <button type="button" class="btn btn-primary" id="err-retry">Reintentar</button>
+      <details class="err-detail"><summary>Detalle técnico</summary><pre id="err-detail"></pre></details>
+    </div>
+
+    <div id="fallback" class="fallback" hidden>
+      <img src="img/lh140-dimensiones.jpg" alt="Vista de la turbina LH 140 con sus dimensiones: Ø330 mm de cubierta, Ø310 mm de base y 695 mm de alto" loading="lazy">
+      <p><strong id="fb-cause">Tu navegador no tiene WebGL 2 disponible</strong>, así que mostramos una imagen fija. El recorrido y la calculadora funcionan igual.</p>
+      <p class="fb-hint">Para ver el modelo 3D: activá la <em>aceleración por hardware</em> (Chrome/Edge: Configuración › Sistema), actualizá el navegador o el driver de video, y recargá.</p>
+      <button type="button" class="btn" id="fb-retry">Reintentar</button>
+    </div>
+
+    <div class="readout" aria-live="off">
+      <div><span class="k">Giro</span><span class="v" id="ro-rpm">—</span><span class="u">rpm</span></div>
+      <div><span class="k">Potencia</span><span class="v" id="ro-p">—</span><span class="u">W</span></div>
+    </div>
+
+    <div class="toolbar" role="toolbar" aria-label="Herramientas de vista">
+      <label class="tb-slider" for="explode">
+        <span>Despiece</span>
+        <input type="range" id="explode" min="0" max="1" step="0.01" value="0" aria-describedby="explode-hint">
+      </label>
+      <span id="explode-hint" class="sr-only">Separa las piezas a lo largo del eje</span>
+      <button type="button" class="chip" id="tg-cut" aria-pressed="false">Corte</button>
+      <button type="button" class="chip" id="tg-labels" aria-pressed="true">Etiquetas</button>
+      <button type="button" class="chip" id="tg-flow" aria-pressed="true">Flujo</button>
+      <button type="button" class="chip" id="tg-slow" aria-pressed="true" title="Cámara lenta ×¼ (rotor y flujo)">Lento ×¼</button>
+      <button type="button" class="chip" id="tg-reset" title="Volver a la vista del paso">Centrar</button>
+    </div>
+
+    <div id="info" class="info" hidden role="dialog" aria-labelledby="info-title">
+      <button type="button" class="info-close" id="info-close" aria-label="Cerrar">×</button>
+      <h3 id="info-title"></h3>
+      <p id="info-desc"></p>
+      <p class="info-cad"><span>CAD:</span> <code id="info-cad"></code></p>
+    </div>
+  </section>
+
+  <aside class="panel" id="panel" tabindex="-1">
+    <nav class="steps" aria-label="Pasos del recorrido"><ol id="dots"></ol></nav>
+
+    <article class="step" aria-live="polite">
+      <p class="kicker" id="st-kicker"></p>
+      <h1 id="st-title"></h1>
+      <div class="body" id="st-body"></div>
+      <p class="source"><span>Fuente:</span> <span id="st-src"></span></p>
+    </article>
+
+    <div class="nav">
+      <button type="button" id="bt-prev" class="btn" aria-label="Paso anterior">‹ Anterior</button>
+      <button type="button" id="bt-play" class="btn btn-play" aria-pressed="false">▶ Reproducir</button>
+      <button type="button" id="bt-next" class="btn btn-primary" aria-label="Paso siguiente">Siguiente ›</button>
+    </div>
+
+    <section class="card calc" aria-labelledby="calc-h">
+      <h2 id="calc-h">Condiciones del sitio</h2>
+      <div class="field">
+        <label for="in-q">Caudal <i>Q</i></label>
+        <output id="out-q" for="in-q"></output>
+        <input type="range" id="in-q" min="10" max="45" step="0.5">
+      </div>
+      <div class="field">
+        <label for="in-h">Salto <i>H</i></label>
+        <output id="out-h" for="in-h"></output>
+        <input type="range" id="in-h" min="0.6" max="3.5" step="0.05">
+      </div>
+      <div class="presets">
+        <button type="button" class="chip" id="pr-folleto">Ejemplo folleto · 1,6 m · 25 L/s</button>
+        <button type="button" class="chip" id="pr-medicion">Medición real 03/12/2020</button>
+      </div>
+
+      <div class="formula" aria-label="Fórmula de potencia">P = ρ · g · Q · H · η</div>
+      <dl class="results">
+        <div><dt>Potencia hidráulica <small>ρgQH</small></dt><dd id="r-ph">—</dd></div>
+        <div><dt>Rendimiento global <small>η</small></dt><dd id="r-eta">—</dd></div>
+        <div class="big"><dt>Potencia eléctrica</dt><dd id="r-p">—</dd></div>
+        <div><dt>Energía por día</dt><dd id="r-e">—</dd></div>
+        <div><dt>Giro estimado</dt><dd id="r-n">—</dd></div>
+      </dl>
+      <p class="note" id="r-note"></p>
+
+      <details class="tri" id="tri-box">
+        <summary>Triángulo de velocidades (simplificado)</summary>
+        <svg id="tri" role="img" aria-label="Triángulos de velocidades a la entrada y salida de la hélice"></svg>
+        <p class="tri-legend" id="tri-legend"></p>
+        <p class="note">Radio medio de la hélice. El giro de entrada c<sub>u1</sub> lo da el distribuidor radial; c<sub>m</sub> = Q / área de la hélice es la componente axial (vertical, hacia abajo). Salida sin giro (c<sub>u2</sub> ≈ 0) y Euler con el η de arriba. <span class="tag tag-gen">explicación general</span></p>
+      </details>
+    </section>
+
+    <footer class="foot">
+      <p>Modelo 3D: CAD original <em>Axial LH 2.2.3</em> (Inventor → STEP → glTF). Canal, pileta y caño son un esquema ilustrativo.</p>
+      <p>Teclado: ← → cambian de paso · espacio reproduce/pausa.</p>
+    </footer>
+  </aside>
+</main>
+
+<noscript><p class="noscript">Esta animación necesita JavaScript.</p></noscript>
+<!-- Barra de carga y avisos de error. Script clásico en línea: funciona aunque falle el resto. -->
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); }, retryFn = null, done = false;
+  function show(el, on) { if (el) el.hidden = !on; }
+  window.YakuStatus = {
+    cargando: function (txt, f) {
+      f = Math.max(0, Math.min(1, f || 0));
+      $('loader').classList.remove('done'); show($('error'), false);
+      if (txt) $('loader-txt').textContent = txt;
+      $('loader-fill').style.width = (f * 100).toFixed(0) + '%';
+      $('loader-pct').textContent = (f * 100).toFixed(0) + ' %';
+      $('loader').querySelector('.loader-bar').setAttribute('aria-valuenow', (f * 100).toFixed(0));
+    },
+    listo: function () { done = true; $('loader').classList.add('done'); show($('error'), false); },
+    error: function (o) {
+      done = true;
+      $('loader').classList.add('done');
+      $('err-title').textContent = o.titulo || 'Ocurrió un error';
+      $('err-cause').textContent = o.causa || '';
+      $('err-hint').textContent = o.sugerencia || '';
+      $('err-detail').textContent = o.detalle || '';
+      $('err-detail').parentNode.hidden = !o.detalle;
+      retryFn = o.reintentar || function () { location.reload(); };
+      show($('error'), true);
+      $('err-retry').focus({ preventScroll: true });
+    },
+    sinWebGL: function (gl) {
+      done = true;
+      $('loader').classList.add('done');
+      if (gl && gl.webgl1) $('fb-cause').textContent = 'Tu navegador solo tiene WebGL 1 (la animación necesita WebGL 2)';
+      else if (gl && gl.error) $('fb-cause').textContent = 'El navegador no pudo crear el contexto WebGL 2 (aceleración gráfica deshabilitada o bloqueada)';
+      else if (gl && gl.forzado) $('fb-cause').textContent = 'Modo sin 3D (?nogl)';
+      show($('fallback'), true);
+    }
+  };
+  $('err-retry').addEventListener('click', function () { show($('error'), false); retryFn && retryFn(); });
+  $('fb-retry').addEventListener('click', function () { location.reload(); });
+  window.__yakuBundleFail = function () {
+    YakuStatus.error({ titulo: 'Falta un archivo de la animación',
+      causa: 'No se encontró js/app.bundle.js.',
+      sugerencia: 'Copiá de nuevo la carpeta animacion-axial completa, o regenerá los archivos con «npm run build».' });
+  };
+  // perro guardián: si la aplicación no arrancó en 20 s (script bloqueado o con error de sintaxis), avisar
+  setTimeout(function () {
+    if (!done && !document.documentElement.dataset.boot) YakuStatus.error({
+      titulo: 'La animación no arrancó',
+      causa: 'El código de la animación no llegó a ejecutarse (navegador muy antiguo o archivo bloqueado).',
+      sugerencia: 'Usá Chrome, Edge o Firefox actualizados y recargá la página.',
+      reintentar: function () { location.reload(); } });
+  }, 20000);
+})();
+</script>
+<script src="js/app.bundle.js" onerror="__yakuBundleFail()"></script>
+</body>
+</html>
