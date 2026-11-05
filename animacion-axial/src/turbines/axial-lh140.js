@@ -55,6 +55,8 @@ export const PIEZAS = {
   // --- entorno procedural (esquema, no forma parte del CAD) ---
   canal:          { nombre: 'Canal de entrada', procedural: true, cut: true, anchor: [0.75, 0.1, 0.0], noHighlight: true,
                     desc: 'Esquema ilustrativo. Puede ser de cemento, chapa o madera impermeabilizada; abierto o cerrado (uno o varios caños).' },
+  represa:        { nombre: 'Represa y toma', procedural: true, cut: true, anchor: [1.31, 0.50, 0.0], noHighlight: true,
+                    desc: 'Esquema ilustrativo. La represa (dique) acumula el agua y fija el nivel de arranque; la toma lleva compuerta y reja filtro (para que no entren hojas ni palos) y alimenta el canal de entrada.' },
   pileta:         { nombre: 'Pileta de turbina', procedural: true, cut: true, anchor: [-0.2, 0.0, -0.22], noHighlight: true,
                     desc: 'Esquema ilustrativo (según Canal.png): ensanche redondo al final del canal, fondo plano, más de 500 mm de lado y agujero de 200 mm donde baja la hélice.' },
   agua:           { nombre: 'Agua (nivel h)', procedural: true, cut: true, noPick: true, noHighlight: true },
@@ -65,7 +67,7 @@ export const PIEZAS = {
 };
 
 export const GIRATORIAS = ['helice', 'cono', 'eje', 'acople', 'rotor_gen'];
-export const SENTIDO_GIRO = +1; // sentido del giro impuesto por los deflectores (antihorario visto desde arriba)
+export const SENTIDO_GIRO = -1; // sentido de giro del rotor y del agua (horario visto desde arriba); invertido a pedido respecto del 1.er build
 
 // ---------------------------------------------------------------------------
 // Datos del sitio y de la máquina (de los documentos)
@@ -111,13 +113,13 @@ export const PASOS = [
   },
   {
     id: 'llegada', kicker: 'Paso 1', titulo: 'El agua llega a la pileta',
-    cuerpo: `<p>La LH 140 va <strong>montada en el canal</strong>, con el <strong>eje vertical</strong>. El agua se toma de un dique (con filtro) y corre por el <strong>canal de entrada</strong> (cemento, chapa o madera impermeabilizada; abierto o cerrado con uno o varios caños) hasta la <strong>pileta de turbina</strong>, un ensanche redondo al final del canal.</p>
+    cuerpo: `<p>La LH 140 va <strong>montada en el canal</strong>, con el <strong>eje vertical</strong>. Una <strong>represa</strong> (dique) acumula el agua; por la <strong>toma</strong> —con compuerta y reja filtro— pasa al <strong>canal de entrada</strong> y corre por él (cemento, chapa o madera impermeabilizada; abierto o cerrado con uno o varios caños) hasta la <strong>pileta de turbina</strong>, un ensanche redondo al final del canal.</p>
       <p>La pileta es abierta, de <strong>fondo plano</strong>, de más de 500 mm, con un <strong>agujero de 200 mm</strong> en el fondo. La turbina simplemente se apoya sobre ese agujero: el burlete de EPDM sella contra el fondo y la hélice queda metida en el caño de bajada.</p>
       <p>Acá el agua va lenta y rodea a la turbina por todos lados: su energía es casi toda <em>altura</em> (energía potencial).</p>`,
-    fuente: 'LH-140 Instalación · Canal.png · Instalacion.png — canal y pileta dibujados como esquema',
-    camara: { pos: [1.75, 1.15, 1.45], target: [0.38, -0.02, 0.0] },
-    foco: ['canal', 'pileta', 'agua', 'burlete', 'disco_inferior'], corte: false, flujo: true,
-    etiquetas: ['canal', 'pileta', 'burlete'],
+    fuente: 'LH-140 Instalación · Canal.png · Instalacion.png — represa, canal y pileta dibujados como esquema',
+    camara: { pos: [3.0, 1.55, 2.35], target: [0.82, -0.04, 0.0] },
+    foco: ['represa', 'canal', 'pileta', 'agua', 'burlete', 'disco_inferior'], corte: false, flujo: true,
+    etiquetas: ['represa', 'canal', 'pileta', 'burlete'],
   },
   {
     id: 'distribuidor', kicker: 'Paso 2', titulo: 'El distribuidor le da giro al agua',
@@ -188,7 +190,11 @@ export const PASOS = [
 // ---------------------------------------------------------------------------
 // Entorno procedural (esquema de instalación: canal, pileta, agua, caño, nivel inferior)
 // ---------------------------------------------------------------------------
-export const GEO = { rPileta: 0.32, pozo: 0.32, piso: -0.006, espesor: 0.05, rCanio: 0.10, yFinCanio: -1.05, canalAncho: 0.40, canalLargo: 1.0, pared: 0.34 };
+export const GEO = { rPileta: 0.32, pozo: 0.32, piso: -0.006, espesor: 0.05, rCanio: 0.10, yFinCanio: -1.05, canalAncho: 0.40, canalLargo: 1.0, pared: 0.34,
+  // represa al inicio del canal (esquema)
+  dique: { espesor: 0.12, semiAncho: 0.66, alto: 0.58, embalseLargo: 0.62, hEmbalse: 0.42, apertura: 0.20 } };
+/** posición x de la cara de aguas abajo de la represa (= fin del canal) */
+export const xDique = () => Math.sqrt(GEO.rPileta ** 2 - (GEO.canalAncho / 2) ** 2) + GEO.canalLargo;
 
 export function entorno(viewer) {
   const g = GEO;
@@ -221,6 +227,29 @@ export function entorno(viewer) {
   const fl = new THREE.Mesh(new THREE.ConeGeometry(0.035, 0.09, 3), new THREE.MeshBasicMaterial({ color: 0x5fd3f0, transparent: true, opacity: 0.85 }));
   fl.rotation.z = Math.PI / 2; fl.position.set(xa + L * 0.72, g.piso + SITIO.hAgua + 0.03, 0); canal.add(fl);
   viewer.addPart('canal', canal, PIEZAS.canal);
+
+  // Represa al inicio del canal: muro con toma (compuerta + reja), alas laterales y embalse
+  const dq = g.dique, x0 = xDique(), xm = x0 + dq.espesor / 2, zMax = dq.semiAncho;
+  const represa = new THREE.Group(); represa.name = 'represa';
+  const caja = (sx, sy, sz, x, y, z, mat) => { const m = new THREE.Mesh(new THREE.BoxGeometry(sx, sy, sz), mat); m.position.set(x, y, z); represa.add(m); return m; };
+  const yb = g.piso, zl = (zMax - b);           // ancho de cada tramo de muro a los lados de la toma
+  [-1, 1].forEach(sg => caja(dq.espesor, dq.alto, zl, xm, yb + dq.alto / 2, sg * (b + zl / 2), concreto()));
+  caja(dq.espesor, dq.alto - dq.apertura, 2 * b, xm, yb + dq.apertura + (dq.alto - dq.apertura) / 2, 0, concreto()); // dintel sobre la toma
+  [-1, 1].forEach(sg => caja(dq.embalseLargo, dq.alto, 0.03, x0 + dq.espesor + dq.embalseLargo / 2, yb + dq.alto / 2, sg * zMax, concreto())); // alas
+  caja(dq.espesor + dq.embalseLargo, 0.05, 2 * zMax, x0 + (dq.espesor + dq.embalseLargo) / 2, yb - 0.025, 0, concreto());   // fondo
+  // compuerta (chapa) levantada: deja pasar justo el tirante del canal
+  const acero = new THREE.MeshStandardMaterial({ color: 0x5b6f7a, roughness: 0.45, metalness: 0.6, transparent: true, opacity: 0.9 });
+  caja(0.025, 0.26, 2 * b - 0.02, x0 + dq.espesor + 0.02, yb + dq.apertura + 0.13, 0, acero);
+  [-1, 1].forEach(sg => caja(0.04, dq.alto - 0.04, 0.03, x0 + dq.espesor + 0.02, yb + (dq.alto - 0.04) / 2, sg * (b + 0.015), acero)); // guías
+  const vol = caja(0.1, 0.04, 2 * b + 0.06, x0 + dq.espesor + 0.02, yb + dq.alto - 0.02, 0, acero); vol.scale.set(1, 1, 1); // travesaño del husillo
+  const husillo = new THREE.Mesh(new THREE.CylinderGeometry(0.008, 0.008, 0.2, 10), acero); husillo.position.set(x0 + dq.espesor + 0.02, yb + dq.alto - 0.1, 0); represa.add(husillo);
+  // reja filtro delante de la toma (barras verticales)
+  for (let k = 0; k < 9; k++) { const z = -b + 0.02 + k * (2 * b - 0.04) / 8; const bar = new THREE.Mesh(new THREE.CylinderGeometry(0.005, 0.005, dq.apertura + 0.02, 8), acero); bar.position.set(x0 + dq.espesor + 0.09, yb + (dq.apertura + 0.02) / 2, z); represa.add(bar); }
+  [yb + 0.02, yb + dq.apertura].forEach(y => caja(0.012, 0.012, 2 * b, x0 + dq.espesor + 0.09, y, 0, acero));
+  // agua embalsada (nivel más alto que el del canal)
+  const emb = new THREE.Mesh(new THREE.BoxGeometry(dq.embalseLargo - 0.03, dq.hEmbalse, 2 * zMax - 0.04), aguaMat(0.14));
+  emb.position.set(x0 + dq.espesor + dq.embalseLargo / 2, yb + dq.hEmbalse / 2, 0); represa.add(emb);
+  viewer.addPart('represa', represa, PIEZAS.represa);
 
   // Agua en pileta + canal (nivel h)
   const agua = new THREE.Group(); agua.name = 'agua';
@@ -283,13 +312,15 @@ export function flujo(viewer, { n = 2200 } = {}) {
 
   const rnd = (a, b) => a + Math.random() * (b - a);
   const rIn = rot.dh / 2 + 0.004, rOut = rot.D / 2 - 0.004;
+  const xD = xDique();
   function spawn(i, anywhere = false) {
     rr[i] = Math.sqrt(rnd(rIn * rIn, rOut * rOut));      // radio de paso por la hélice (área uniforme)
     rp[i] = Math.sqrt(Math.random()) * (g.rCanio - 0.008); // radio en el caño
     yf[i] = rnd(0.012, 0.10);                               // altura de paso por el distribuidor
     life[i] = 0;
     if (Math.random() < 0.3) {          // entra por el canal
-      st[i] = 0; X[i] = anywhere ? rnd(g.pozo, g.pozo + g.canalLargo) : g.pozo + g.canalLargo - 0.05; Z[i] = rnd(-0.17, 0.17); Y[i] = rnd(0.01, h - 0.01);
+      st[i] = 0; X[i] = anywhere ? rnd(g.pozo, xD + 0.6) : xD + 0.55;
+      const emb = X[i] > xD; Z[i] = emb ? rnd(-0.55, 0.55) : rnd(-0.17, 0.17); Y[i] = rnd(0.01, (emb ? g.dique.hEmbalse : h) - 0.01);
     } else {                             // desde la periferia de la pileta
       st[i] = 1; PHI[i] = rnd(0, Math.PI * 2); R[i] = anywhere ? rnd(0.16, 0.30) : rnd(0.27, 0.30); Y[i] = rnd(0.01, h - 0.01);
     }
@@ -309,7 +340,12 @@ export function flujo(viewer, { n = 2200 } = {}) {
       let dr = 0, dphi = 0, dy = 0;
       switch (st[i]) {
         case 0: { // canal (cartesiano)
-          vx[i] = -vCanal; vy[i] = (yf[i] - Y[i]) * 0.3; vz[i] = -Z[i] * 0.15;
+          const dx = X[i] - xD;
+          if (dx > 0) {                      // embalse: lento, converge hacia la toma y baja al tirante del canal
+            const sx = THREE.MathUtils.clamp(dx / 0.55, 0, 1);
+            vx[i] = -vCanal * (0.3 + 0.7 * (1 - sx)); vy[i] = (yf[i] - Y[i]) * (0.3 + 2.2 * (1 - sx)); vz[i] = -Z[i] * (0.15 + 1.4 * (1 - sx));
+            if (Math.abs(Z[i]) > 0.18 && dx < 0.1) Z[i] *= 0.9;
+          } else { vx[i] = -vCanal; vy[i] = (yf[i] - Y[i]) * 0.3; vz[i] = -Z[i] * 0.15; }
           X[i] += vx[i] * dt; Y[i] += vy[i] * dt; Z[i] += vz[i] * dt;
           if (X[i] < g.pozo - 0.04) { st[i] = 1; R[i] = Math.hypot(X[i], Z[i]); PHI[i] = Math.atan2(X[i], Z[i]); }
           continue;
