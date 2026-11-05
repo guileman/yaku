@@ -23,21 +23,21 @@ export const FUENTES = {
 // ---------------------------------------------------------------------------
 export const PIEZAS = {
   cubierta:       { nombre: 'Cubierta', cad: 'Cubierta + Anclaje de cubierta (×3)', explode: [0, 0.331, 0], cut: true, anchor: [0.13, 0.57, 0.09],
-                    desc: 'Tapa superior que protege al generador. Ø330 mm × 150 mm de alto (plano de dimensiones).' },
+                    desc: 'Tapa superior que protege al generador. Ø330 mm × 150 mm de alto.' },
   rotor_gen:      { nombre: 'Rotor del generador', cad: 'LG inverter motor › ROTOR + Imán (×12)', explode: [0, 0.23, 0], cut: true, anchor: [0.15, 0.50, 0.03],
                     desc: 'Rotor exterior con imanes permanentes. Gira solidario al eje y envuelve al estator.' },
   estator:        { nombre: 'Estator bobinado', cad: 'LG inverter motor › Estator + Posicionador de Estator', explode: [0, 0.158, 0], cut: true, anchor: [-0.12, 0.49, 0.03],
                     desc: 'Parte fija del generador con las bobinas donde se induce la tensión trifásica.' },
   acople:         { nombre: 'Acople estriado y hub', cad: 'Estriado (suplemento estriado) + Hub motor original', explode: [0, 0.187, 0], cut: true, anchor: [0.0, 0.53, 0.04],
-                    desc: 'Transmite el par del eje al rotor del generador a través del hub original del motor.' },
+                    desc: 'Transmite el par del eje al rotor del generador a través del hub del generador.' },
   disco_motor:    { nombre: 'Disco porta motor', cad: 'Disco motor AL', explode: [0, 0.094, 0], cut: true, anchor: [0.155, 0.445, 0.0],
                     desc: 'Disco de aluminio que soporta el estator sobre la columna.' },
   rodamiento:     { nombre: 'Rodamiento superior', cad: 'RODAMIENTO 6204 ZZ (47×20×14)', explode: [0, 0.065, 0], cut: true, anchor: [0.0, 0.44, 0.0],
-                    desc: 'Rodamiento rígido de bolillas 6204 ZZ que guía el eje en la parte superior.' },
+                    desc: 'Rodamiento rígido de bolillas que guía el eje en la parte superior.' },
   columna:        { nombre: 'Columna (chasis)', cad: 'CAÑO PVC Ø75 E3.6 + accesorios Cepex 05_07/05_09/05_15/05_25 + Tapa', explode: [0, 0.0, 0], cut: true, anchor: [0.045, 0.30, 0.0],
-                    desc: 'Caño de PVC Ø75 con accesorios Cepex: une el distribuidor con el generador y aloja el eje.' },
+                    desc: 'Columna de PVC que une el distribuidor con el generador y aloja el eje.' },
   eje:            { nombre: 'Eje', cad: 'Eje + Seeger Ø20/Ø22', explode: [0, 0.0, 0], anchor: [0.0, 0.21, 0.0],
-                    desc: 'Eje de acero inoxidable (barra 304L de 25,4 mm según lista de materiales). Lleva la hélice abajo y el rotor del generador arriba.' },
+                    desc: 'Eje de acero inoxidable (barra 304L de 25,4 mm). Lleva la hélice abajo y el rotor del generador arriba.' },
   buje:           { nombre: 'Buje inferior sumergido', cad: 'Buje inferior Ø20×40', explode: [0, -0.043, 0], cut: true, anchor: [0.0, 0.03, 0.0],
                     desc: 'Cojinete de deslizamiento que trabaja sumergido y guía el eje cerca de la hélice.' },
   disco_superior: { nombre: 'Disco superior', cad: 'Disco superior AL_2', explode: [0, 0.022, 0], cut: true, anchor: [0.15, 0.12, 0.0],
@@ -58,7 +58,7 @@ export const PIEZAS = {
   represa:        { nombre: 'Represa y toma', procedural: true, cut: true, anchor: [1.31, 0.50, 0.0], noHighlight: true,
                     desc: 'Esquema ilustrativo. La represa (dique) acumula el agua y fija el nivel de arranque; la toma lleva compuerta y reja filtro (para que no entren hojas ni palos) y alimenta el canal de entrada.' },
   pileta:         { nombre: 'Pileta de turbina', procedural: true, cut: true, anchor: [-0.2, 0.0, -0.22], noHighlight: true,
-                    desc: 'Esquema ilustrativo (según Canal.png): ensanche redondo al final del canal, fondo plano, más de 500 mm de lado y agujero de 200 mm donde baja la hélice.' },
+                    desc: 'Esquema ilustrativo: ensanche redondo al final del canal, fondo plano, más de 500 mm de lado y agujero de 200 mm donde baja la hélice.' },
   agua:           { nombre: 'Agua (nivel h)', procedural: true, cut: true, noPick: true, noHighlight: true },
   canio_salida:   { nombre: 'Caño de salida Ø200', procedural: true, cut: true, anchor: [0.105, -0.55, 0.0], noHighlight: true,
                     desc: 'Esquema ilustrativo. Diámetro interno 200 mm; su extremo inferior siempre debajo del nivel de agua inferior.' },
@@ -107,7 +107,6 @@ export const PASOS = [
     cuerpo: `<p>La <strong>LH 140</strong> es una turbina hidráulica <strong>de tipo axial</strong> para autogeneración eléctrica a pequeña escala. Pesa <strong>16 kg</strong>: una sola persona la apoya en la pileta o la retira para mantenimiento (o para evitar robos).</p>
       <p>Está hecha con PVC, aluminio, acero inoxidable y fibra de vidrio. Según el salto y el caudal del lugar entrega <strong>de 50 a 600 W</strong>. Mide Ø330 × 695 mm.</p>
       <p class="hint">Rotá con un dedo o el mouse, acercá con pellizco o rueda. Tocá una pieza para ver qué es.</p>`,
-    fuente: 'Folleto LH 140 · plano de dimensiones',
     camara: VISTA_GENERAL, foco: null, corte: false, flujo: true,
     etiquetas: ['cubierta', 'columna', 'deflectores', 'helice', 'canio_salida', 'canal'],
   },
@@ -116,7 +115,6 @@ export const PASOS = [
     cuerpo: `<p>La LH 140 va <strong>montada en el canal</strong>, con el <strong>eje vertical</strong>. Una <strong>represa</strong> (dique) acumula el agua; por la <strong>toma</strong> —con compuerta y reja filtro— pasa al <strong>canal de entrada</strong> y corre por él (cemento, chapa o madera impermeabilizada; abierto o cerrado con uno o varios caños) hasta la <strong>pileta de turbina</strong>, un ensanche redondo al final del canal.</p>
       <p>La pileta es abierta, de <strong>fondo plano</strong>, de más de 500 mm, con un <strong>agujero de 200 mm</strong> en el fondo. La turbina simplemente se apoya sobre ese agujero: el burlete de EPDM sella contra el fondo y la hélice queda metida en el caño de bajada.</p>
       <p>Acá el agua va lenta y rodea a la turbina por todos lados: su energía es casi toda <em>altura</em> (energía potencial).</p>`,
-    fuente: 'LH-140 Instalación · Canal.png · Instalacion.png — represa, canal y pileta dibujados como esquema',
     camara: { pos: [3.0, 1.55, 2.35], target: [0.82, -0.04, 0.0] },
     foco: ['represa', 'canal', 'pileta', 'agua', 'burlete', 'disco_inferior'], corte: false, flujo: true,
     etiquetas: ['represa', 'canal', 'pileta', 'burlete'],
@@ -125,7 +123,7 @@ export const PASOS = [
     id: 'distribuidor', kicker: 'Paso 2', titulo: 'El distribuidor le da giro al agua',
     cuerpo: `<p>Desde la pileta, el agua entra <strong>radialmente</strong> (de afuera hacia el eje) por todo el perímetro, entre el disco superior y el disco inferior. Los <strong>8 deflectores curvos</strong> (fijos) forman el distribuidor: guían el agua y le imprimen una <strong>componente tangencial</strong> <i>c<sub>u</sub></i> antes de la hélice.</p>
       <p>Al acercarse al centro el paso se achica: el agua se acelera y el giro se intensifica, porque se conserva el momento angular (<i>r·c<sub>u</sub></i> ≈ constante).</p>`,
-    fuente: 'CAD Axial LH 2.2.3 · la conservación del momento angular es una explicación general',
+    voz: 'Desde la pileta, el agua entra radialmente, de afuera hacia el eje, por todo el perímetro, entre el disco superior y el disco inferior. Los ocho deflectores curvos y fijos forman el distribuidor: guían el agua y le dan una componente tangencial, es decir un giro, antes de la hélice. Al acercarse al centro el paso se achica: el agua se acelera y el giro se intensifica, porque se conserva el momento angular.',
     camara: { pos: [0.42, 0.30, 0.50], target: [0, 0.045, 0] },
     foco: ['deflectores', 'disco_superior'], corte: false, flujo: true,
     etiquetas: ['deflectores', 'disco_superior', 'disco_inferior'], ocultar: ['agua'],
@@ -136,26 +134,24 @@ export const PASOS = [
       <p>Cada álabe trabaja como un ala: el flujo relativo <i>w</i> genera sustentación y su componente tangencial empuja al álabe. Dicho con Euler: la hélice le <em>saca el giro</em> al agua (<i>c<sub>u1</sub></i> → <i>c<sub>u2</sub></i> ≈ 0) y ese cambio de momento angular es el par en el eje:</p>
       <p class="eq">T = ρ · Q · r · (c<sub>u1</sub> − c<sub>u2</sub>)</p>
       <p>Mirá el triángulo de velocidades abajo: cambia con el caudal y el salto.</p>`,
-    fuente: '',
+    voz: 'Después del distribuidor el flujo pasa de radial a axial: dobla noventa grados y baja, siempre girando, en sentido vertical a través de la hélice de 140 milímetros de diámetro y tres álabes, alojada en la camisa del disco inferior. Cada álabe trabaja como un ala: el flujo relativo genera sustentación y su componente tangencial empuja al álabe. Dicho con la ecuación de Euler, la hélice le saca el giro al agua, y ese cambio de momento angular es el par en el eje. Mirá el triángulo de velocidades abajo: cambia con el caudal y el salto.',
     camara: { pos: [0.30, 0.02, 0.36], target: [0, -0.045, 0] },
     foco: ['helice', 'cono'], corte: true, flujo: true, triangulo: true,
     etiquetas: ['helice', 'disco_inferior', 'cono'], ocultar: ['agua'],
   },
   {
     id: 'eje', kicker: 'Paso 4', titulo: 'El eje sube el par hasta el generador',
-    cuerpo: `<p>El par viaja por el <strong>eje de acero inoxidable</strong> (barra 304L de 25,4 mm) que corre por dentro de la <strong>columna</strong> de caño PVC Ø75 con accesorios Cepex: el chasis que une distribuidor y generador.</p>
-      <p>Abajo, un <strong>buje sumergido</strong> (Ø20×40) guía el eje cerca de la hélice; arriba, un <strong>rodamiento 6204 ZZ</strong>. El <strong>acople estriado</strong> conecta el eje con el hub original del motor.</p>
+    cuerpo: `<p>El par viaja por el <strong>eje de acero inoxidable</strong> (barra 304L de 25,4 mm) que corre por dentro de la <strong>columna</strong>, el chasis que une distribuidor y generador.</p>
+      <p>Abajo, un <strong>buje sumergido</strong> guía el eje cerca de la hélice; arriba, un <strong>rodamiento</strong>. El <strong>acople estriado</strong> conecta el eje con el hub del generador.</p>
       <p>Así el generador queda <strong>seco, por encima del agua</strong>, y solo la hélice trabaja sumergida.</p>`,
-    fuente: 'CAD Axial LH 2.2.3 · Lista de materiales LH 140 R0',
     camara: { pos: [0.62, 0.42, 0.78], target: [0, 0.22, 0] },
     foco: ['eje', 'columna', 'buje', 'rodamiento', 'acople'], corte: true, flujo: false,
     etiquetas: ['eje', 'columna', 'buje', 'rodamiento', 'acople'],
   },
   {
     id: 'generador', kicker: 'Paso 5', titulo: 'El generador convierte el giro en electricidad',
-    cuerpo: `<p>Arriba está el <strong>generador trifásico de imanes permanentes</strong>: un motor LG Inverter de <strong>rotor exterior</strong> usado como generador. El rotor con imanes gira con el eje alrededor del <strong>estator bobinado</strong>, fijo sobre el disco porta motor.</p>
-      <p>El campo de los imanes barre las bobinas e induce tensión (ley de Faraday). Salida: <strong>trifásica de 50 a 380 V</strong> y <strong>0,2 a 3 A</strong> según la configuración, con una velocidad de trabajo de <strong>600 a 900 rpm</strong>.</p>`,
-    fuente: 'Folleto LH 140 · CAD (LG inverter motor)',
+    cuerpo: `<p>Arriba está el <strong>generador trifásico de imanes permanentes</strong>. El rotor con imanes gira con el eje alrededor del <strong>estator bobinado</strong>, fijo sobre el disco porta motor.</p>
+      <p>El campo de los imanes barre las bobinas e induce tensión. Salida: <strong>trifásica de 50 a 380 V</strong> y <strong>0,2 a 3 A</strong> según la configuración, con una velocidad de trabajo de <strong>600 a 900 rpm</strong>.</p>`,
     camara: { pos: [0.40, 0.78, 0.55], target: [0, 0.48, 0] },
     foco: ['rotor_gen', 'estator', 'disco_motor', 'acople'], corte: true, flujo: false,
     etiquetas: ['rotor_gen', 'estator', 'disco_motor', 'cubierta'],
@@ -165,7 +161,6 @@ export const PASOS = [
     cuerpo: `<p>Debajo de la hélice el agua sale <strong>verticalmente hacia abajo</strong> por el <strong>caño de salida</strong> redondo (Ø interno 200 mm; plástico, chapa o cemento), sellado al fondo de la pileta, hasta el nivel inferior. Su extremo <strong>siempre tiene que quedar sumergido</strong>: así se forma la <strong>columna hidráulica</strong> que mueve la hélice.</p>
       <p>Por eso el <strong>salto H</strong> se mide entre el nivel de la pileta y el nivel inferior, aunque la turbina esté arriba: el caño trabaja como <em>tubo de aspiración</em> y la depresión bajo la hélice aprovecha casi todo el desnivel.</p>
       <p>Por continuidad, en el caño (más área) el agua baja más lento que en la hélice.</p>`,
-    fuente: 'LH-140 Instalación · Canal.png · LH diagrama.png · tubo de aspiración: explicación general',
     camara: { pos: [1.45, -0.15, 1.75], target: [0, -0.45, 0] },
     foco: ['canio_salida', 'nivel_inferior', 'helice'], corte: false, flujo: true,
     etiquetas: ['canio_salida', 'nivel_inferior', 'pileta'],
@@ -181,7 +176,6 @@ export const PASOS = [
         <span role="listitem">Inversor<br><small>220 V ~</small></span><i aria-hidden="true">→</i>
         <span role="listitem">Consumo</span>
       </div>`,
-    fuente: 'LH-140 Instalación (montaje eléctrico) · esquema de conexión · Ventajas comparativas',
     camara: VISTA_GENERAL, foco: null, corte: false, flujo: true,
     etiquetas: ['cubierta'],
   },

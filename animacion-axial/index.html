@@ -6,7 +6,7 @@
 <title>LH 140 · Cómo funciona la turbina axial · Yaku Energía</title>
 <meta name="description" content="Animación interactiva 3D de la turbina hidráulica axial LH 140 de Yaku Energía: recorrido por el distribuidor, la hélice, el eje y el generador, con calculadora de potencia.">
 <meta name="theme-color" content="#0f1b20">
-<link rel="stylesheet" href="css/app.css?v=20261104b">
+<link rel="stylesheet" href="css/app.css?v=20261104c">
 </head>
 <body>
 <a class="skip" href="#panel">Saltar al recorrido</a>
@@ -65,7 +65,6 @@
       <button type="button" class="info-close" id="info-close" aria-label="Cerrar">×</button>
       <h3 id="info-title"></h3>
       <p id="info-desc"></p>
-      <p class="info-cad"><span>CAD:</span> <code id="info-cad"></code></p>
     </div>
   </section>
 
@@ -73,10 +72,9 @@
     <nav class="steps" aria-label="Pasos del recorrido"><ol id="dots"></ol></nav>
 
     <article class="step" aria-live="polite">
-      <p class="kicker" id="st-kicker"></p>
+      <div class="stephead"><p class="kicker" id="st-kicker"></p><button type="button" class="chip voz" id="bt-voz" aria-pressed="true" aria-label="Voz que lee cada paso: activada" title="Voz que lee cada paso">🔊 Voz</button></div>
       <h1 id="st-title"></h1>
       <div class="body" id="st-body"></div>
-      <p class="source"><span>Fuente:</span> <span id="st-src"></span></p>
     </article>
 
     <div class="nav">
@@ -181,6 +179,6 @@
   }, 20000);
 })();
 </script>
-<script src="js/app.bundle.js?v=20261104b" onerror="__yakuBundleFail()"></script>
+<script src="js/app.bundle.js?v=20261104c" onerror="__yakuBundleFail()"></script>
 </body>
 </html>

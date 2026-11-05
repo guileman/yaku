@@ -5,6 +5,7 @@ import { Viewer, webglSupport } from './engine/viewer.js';
 import { Tour } from './engine/tour.js';
 import { hydraulicPower, interpTable, fmt } from './engine/physics.js';
 import { drawTriangles, triangleLegend } from './engine/triangle.js';
+import { crearVoz, textoParaVoz } from './engine/voz.js';
 import { obtenerGLB, ModelError } from './engine/model-source.js';
 
 const TURBINAS = {
@@ -154,12 +155,41 @@ function showInfo(id) {
   const p = T.piezas[id]; if (!p || !p.desc) return;
   $('info-title').textContent = p.nombre;
   $('info-desc').textContent = p.desc;
-  $('info-cad').textContent = p.cad || 'Esquema (no está en el CAD)';
   $('info').hidden = false;
   viewer?.setFocus([id], { ghostOpacity: 0.22 });
 }
 function closeInfo() { $('info').hidden = true; if (tour?.paso) viewer?.setFocus(tour.paso.foco); }
 $('info-close').addEventListener('click', closeInfo);
+
+// ------------------------------------------------------------------ voz
+const voz = crearVoz();
+let vozOn = true; try { vozOn = localStorage.getItem('yakuVoz') !== '0'; } catch (e) { /* sin almacenamiento */ }
+let gesto = false;                                   // los navegadores solo dejan hablar después de un toque o tecla
+for (const ev of ['pointerdown', 'keydown']) addEventListener(ev, () => { gesto = true; }, { capture: true, once: true });
+const btVoz = $('bt-voz');
+function pintarVoz() {
+  btVoz.setAttribute('aria-pressed', vozOn ? 'true' : 'false');
+  btVoz.setAttribute('aria-label', 'Voz que lee cada paso: ' + (vozOn ? 'activada' : 'desactivada'));
+  btVoz.textContent = vozOn ? '🔊 Voz' : '🔇 Voz';
+  btVoz.classList.toggle('hablando', vozOn && voz.hablando);
+}
+/** Lee el paso; devuelve true si lo está leyendo durante la reproducción automática (avanza sola al terminar) */
+function leerPaso(p) {
+  if (!voz.disponible || !vozOn || !gesto || !p) return false;
+  const auto = !!tour?.playing, i = tour?.i;
+  const texto = (p.kicker && /^Paso/.test(p.kicker) ? p.kicker + '. ' : '') + p.titulo + '. ' + (p.voz || textoParaVoz(p.cuerpo));
+  voz.hablar(texto, { alTerminar: () => { if (auto && tour?.playing && tour.i === i) setTimeout(() => { if (tour.playing && tour.i === i) tour.next(); }, 1500); } });
+  return auto;
+}
+if (!voz.disponible) btVoz.hidden = true;
+voz.onCambio = pintarVoz; pintarVoz();
+btVoz.addEventListener('click', () => {
+  vozOn = !vozOn; try { localStorage.setItem('yakuVoz', vozOn ? '1' : '0'); } catch (e) { /* ok */ }
+  if (vozOn) { gesto = true; leerPaso(tour?.paso); } else voz.parar();
+  pintarVoz();
+});
+addEventListener('pagehide', () => voz.parar());
+document.addEventListener('visibilitychange', () => { if (document.hidden) voz.parar(); });
 
 // ------------------------------------------------------------------ recorrido
 const dots = $('dots');
@@ -172,7 +202,7 @@ T.pasos.forEach((p, i) => {
 function setChip(id, on) { $(id).setAttribute('aria-pressed', on ? 'true' : 'false'); }
 function renderStep(p, i) {
   $('st-kicker').textContent = p.kicker; $('st-title').textContent = p.titulo;
-  $('st-body').innerHTML = p.cuerpo; $('st-src').textContent = p.fuente || ''; $('st-src').parentElement.hidden = !p.fuente;
+  $('st-body').innerHTML = p.cuerpo;
   [...dots.querySelectorAll('button')].forEach((b, k) => k === i ? b.setAttribute('aria-current', 'step') : b.removeAttribute('aria-current'));
   $('bt-prev').disabled = i === 0;
   $('bt-next').textContent = i === T.pasos.length - 1 ? 'Inicio ↺' : 'Siguiente ›';
@@ -185,11 +215,13 @@ const hooks = {
     state.flow = p.flujo !== false; applyFlow();
     setChip('tg-cut', !!p.corte);
     if (state.explode > 0) { $('explode').value = 0; setExplode(0); }
+    return leerPaso(p);
   },
-  onPlay(on) { $('bt-play').setAttribute('aria-pressed', on); $('bt-play').textContent = on ? '❚❚ Pausa' : '▶ Reproducir'; },
+  leer: p => leerPaso(p),
+  onPlay(on) { if (!on) voz.parar(); $('bt-play').setAttribute('aria-pressed', on); $('bt-play').textContent = on ? '❚❚ Pausa' : '▶ Reproducir'; },
 };
 if (viewer) { tour = new Tour(viewer, T.pasos, hooks); tour.go(0); }
-else { let cur = 0; renderStep(T.pasos[0], 0); tour = { get paso() { return T.pasos[cur]; }, go(i) { cur = Math.max(0, Math.min(T.pasos.length - 1, i)); renderStep(T.pasos[cur], cur); }, next() { this.go(cur + 1); }, prev() { this.go(cur - 1); }, toggle() {}, get i() { return cur; } }; $('bt-play').disabled = true; }
+else { let cur = 0; renderStep(T.pasos[0], 0); tour = { get paso() { return T.pasos[cur]; }, go(i) { cur = Math.max(0, Math.min(T.pasos.length - 1, i)); renderStep(T.pasos[cur], cur); leerPaso(T.pasos[cur]); }, next() { this.go(cur + 1); }, prev() { this.go(cur - 1); }, toggle() {}, get i() { return cur; } }; $('bt-play').disabled = true; }
 
 $('bt-prev').addEventListener('click', () => tour.prev());
 $('bt-next').addEventListener('click', () => tour.i === T.pasos.length - 1 ? tour.go(0) : tour.next());

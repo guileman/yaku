@@ -162,3 +162,10 @@ input[type=range] { accent-color: var(--accent); height: 26px; cursor: pointer; 
   .hotspot { font-size: 11.5px; }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+/* voz */
+.stephead { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.chip.voz { min-height: 30px; padding: 6px 11px; font-size: 12px; flex: none; }
+.chip.voz.hablando { border-color: var(--accent); animation: vozLate 1.3s ease-in-out infinite; }
+@keyframes vozLate { 0%, 100% { box-shadow: 0 0 0 0 rgba(242,163,58,.55); } 50% { box-shadow: 0 0 0 6px rgba(242,163,58,0); } }
+@media (prefers-reduced-motion: reduce) { .chip.voz.hablando { animation: none; } }
