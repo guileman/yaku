@@ -112,7 +112,7 @@ export const PASOS = [
   },
   {
     id: 'llegada', kicker: 'Paso 1', titulo: 'El agua llega a la pileta',
-    cuerpo: `<p>La LH 140 va <strong>montada en el canal</strong>, con el <strong>eje vertical</strong>. Una <strong>represa</strong> (dique) acumula el agua; por la <strong>toma</strong> —con compuerta y reja filtro— pasa al <strong>canal de entrada</strong> y corre por él (cemento, chapa o madera impermeabilizada; abierto o cerrado con uno o varios caños) hasta la <strong>pileta de turbina</strong>, un ensanche redondo al final del canal.</p>
+    cuerpo: `<p>La LH 140 va <strong>montada en el canal</strong>, con el <strong>eje vertical</strong>. Una <strong>represa</strong> (dique) acumula el agua; por la <strong>toma</strong> —con compuerta y reja filtro— pasa al <strong>canal de entrada</strong> y corre por él hasta la <strong>pileta de turbina</strong>, un ensanche redondo al final del canal.</p>
       <p>La pileta es abierta, de <strong>fondo plano</strong>, de más de 500 mm, con un <strong>agujero de 200 mm</strong> en el fondo. La turbina simplemente se apoya sobre ese agujero: el burlete de EPDM sella contra el fondo y la hélice queda metida en el caño de bajada.</p>
       <p>Acá el agua va lenta y rodea a la turbina por todos lados: su energía es casi toda <em>altura</em> (energía potencial).</p>`,
     camara: { pos: [3.0, 1.55, 2.35], target: [0.82, -0.04, 0.0] },
