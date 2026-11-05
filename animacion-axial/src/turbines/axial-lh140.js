@@ -136,7 +136,7 @@ export const PASOS = [
       <p>Cada álabe trabaja como un ala: el flujo relativo <i>w</i> genera sustentación y su componente tangencial empuja al álabe. Dicho con Euler: la hélice le <em>saca el giro</em> al agua (<i>c<sub>u1</sub></i> → <i>c<sub>u2</sub></i> ≈ 0) y ese cambio de momento angular es el par en el eje:</p>
       <p class="eq">T = ρ · Q · r · (c<sub>u1</sub> − c<sub>u2</sub>)</p>
       <p>Mirá el triángulo de velocidades abajo: cambia con el caudal y el salto.</p>`,
-    fuente: 'CAD (Helice SEEDOO 271000215) · teoría de Euler: explicación general de turbinas axiales',
+    fuente: '',
     camara: { pos: [0.30, 0.02, 0.36], target: [0, -0.045, 0] },
     foco: ['helice', 'cono'], corte: true, flujo: true, triangulo: true,
     etiquetas: ['helice', 'disco_inferior', 'cono'], ocultar: ['agua'],

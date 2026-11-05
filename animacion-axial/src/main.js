@@ -172,7 +172,7 @@ T.pasos.forEach((p, i) => {
 function setChip(id, on) { $(id).setAttribute('aria-pressed', on ? 'true' : 'false'); }
 function renderStep(p, i) {
   $('st-kicker').textContent = p.kicker; $('st-title').textContent = p.titulo;
-  $('st-body').innerHTML = p.cuerpo; $('st-src').textContent = p.fuente;
+  $('st-body').innerHTML = p.cuerpo; $('st-src').textContent = p.fuente || ''; $('st-src').parentElement.hidden = !p.fuente;
   [...dots.querySelectorAll('button')].forEach((b, k) => k === i ? b.setAttribute('aria-current', 'step') : b.removeAttribute('aria-current'));
   $('bt-prev').disabled = i === 0;
   $('bt-next').textContent = i === T.pasos.length - 1 ? 'Inicio ↺' : 'Siguiente ›';
