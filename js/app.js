@@ -36,18 +36,33 @@
   ["#contactWeb", "#footWeb"].forEach(function (id) { var a = $(id); a.textContent = C.WEB; a.href = "https://" + C.WEB; a.rel = "noopener"; });
 
   /* ---------------- animaciones: "Próximamente" ---------------- */
-  $$("[data-anim]").forEach(function (n) {
+  $$("[data-anim]:not(.demo)").forEach(function (n) {
     var url = C.ANIM[n.getAttribute("data-anim")];
     if (url) {
       if (n.tagName !== "A") {
         var a = document.createElement("a");
-        a.className = "btn btn--ghost"; a.textContent = "Ver cómo funciona"; a.href = url;
+        a.className = "btn btn--ghost"; a.textContent = "▶ Animación 3D"; a.href = url;
         n.replaceWith(a);
       } else { n.href = url; }
     } else if (n.tagName === "A") {
-      n.outerHTML = '<span class="btn btn--off" aria-disabled="true">Ver cómo funciona · <em>Próximamente</em></span>';
+      n.outerHTML = '<span class="btn btn--off" aria-disabled="true">Animación 3D · <em>Próximamente</em></span>';
     }
   });
+
+  /* ---------------- tarjetas de animación 3D ---------------- */
+  $$(".demo[data-anim]").forEach(function (n) {
+    var url = C.ANIM[n.getAttribute("data-anim")];
+    if (url) { n.href = url; n.classList.remove("demo--soon"); n.removeAttribute("aria-disabled"); n.removeAttribute("tabindex"); }
+    else { n.classList.add("demo--soon"); n.setAttribute("aria-disabled", "true"); n.setAttribute("tabindex", "-1"); n.addEventListener("click", function (e) { e.preventDefault(); }); }
+  });
+  /* el video de vista previa solo corre mientras se ve (y no con "reducir movimiento") */
+  var vids = $$("video[data-lazyvideo]");
+  if (vids.length && "IntersectionObserver" in window && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (e) { var v = e.target; if (e.isIntersecting) { var p = v.play(); if (p && p.catch) p.catch(function () {}); } else { v.pause(); } });
+    }, { threshold: 0.25 });
+    vids.forEach(function (v) { v.preload = "metadata"; io.observe(v); });
+  }
 
   /* ---------------- galerías y lightbox ---------------- */
   var lb = $("#lightbox"), lbImg = $("#lbImg");
