@@ -67,7 +67,7 @@ export const PIEZAS = {
 };
 
 export const GIRATORIAS = ['helice', 'cono', 'eje', 'acople', 'rotor_gen'];
-export const SENTIDO_GIRO = -1; // sentido de giro del rotor y del agua (horario visto desde arriba); invertido a pedido respecto del 1.er build
+export const SENTIDO_GIRO = +1; // sentido del giro impuesto por los deflectores (antihorario visto desde arriba)
 
 // ---------------------------------------------------------------------------
 // Datos del sitio y de la máquina (de los documentos)
